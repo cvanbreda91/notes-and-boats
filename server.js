@@ -6,6 +6,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON data
 app.use(express.json());
+app.use(express.static('public'));
 const PORT = process.env.PORT || 3001;
 const { notes } = require('./db/db.json');
 
@@ -14,14 +15,6 @@ function findById(id, notesArray) {
   return result;
 }
 
-app.get('/api/notes',(req,res) => {
-  res.json(notes);
-})
-app.get('/api/notes', (req, res) => {
-  let results = notes;
-  console.log(req.query)
-  res.json(results);
-});
 function filterByQuery(query, notesArray) {
   let filteredResults = notesArray;
   if (query.title) {
@@ -32,6 +25,38 @@ function filterByQuery(query, notesArray) {
   }
   return filteredResults;
 }
+
+function createNewNote(body, notesArray) {
+  const note = body;
+  notesArray.push(note)
+  console.log(body);
+  // our function's main code will go here!
+  fs.writeFileSync(
+    path.join(__dirname, './db/db.json'),
+    JSON.stringify({ notes: notesArray }, null, 2)
+  );
+  // return finished code to post route for response
+  return note;
+}
+
+function validateNote(note) {
+  if (!note.title || typeof note.title !== 'string') {
+    return false;
+  }
+  if (!note.text|| typeof note.text !== 'string') {
+    return false;
+  }
+  return true;
+}
+
+app.get('/api/notes',(req,res) => {
+  res.json(notes);
+})
+app.get('/api/notes', (req, res) => {
+  let results = notes;
+  console.log(req.query)
+  res.json(results);
+});
 app.get('/api/notes/:id', (req, res) => {
   const result = findById(req.params.id, notes);
     res.json(result);
@@ -47,25 +72,20 @@ app.get('/api/animals', (req, res) => {
 app.post('/api/notes', (req, res) => {
   // set id based on what the next index of the array will be
   req.body.id = notes.length.toString();
-  const note = createNewNote(req.body, notes);
-
-  res.json(note);
+  // if any data in req.body is incorrect, send 400 error back
+  if (!validateNote(req.body)) {
+    res.status(400).send('The note is not properly formatted.');
+  } else {
+    const note = createNewNote(req.body, notes);
+    res.json(note);
+  }
 
   
 });
 
-function createNewNote(body, notesArray) {
-  const note = body;
-  notesArray.push(note)
-  console.log(body);
-  // our function's main code will go here!
-  fs.writeFileSync(
-    path.join(__dirname, './db/db.json'),
-    JSON.stringify({ notes: notesArray }, null, 2)
-  );
-  // return finished code to post route for response
-  return note;
-}
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
+});
 
 app.listen(PORT, () => {
     console.log(`API server now on port ${PORT}!`);
