@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(express.static('public'));
 const PORT = process.env.PORT || 3001;
 const { notes } = require('./db/db.json');
-const { request } = require('http');
+
 
 function findById(id, notesArray) {
   const result = notesArray.filter(note => note.id === id)[0];
@@ -90,11 +90,20 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
-app.delete(`/api/notes/:id`, (req, res) => {
+app.delete("/api/notes/:id", (req, res) => {
   console.log("Method called is -- ", req.method)
-  //read all notes from db.json
-  // remove note given id property
-  //rewrite remaining notes to db.json
+
+  var indexOfNoteInJson = notes.map(function(notes) { return notes.id; }).indexOf(req.params.id); //find the index of :id
+  if(indexOfNoteInJson === -1) {
+    res.statusCode = 404;
+    return res.send('Error 404: No ID found');
+  }
+
+  var result = notes.splice(indexOfNoteInJson,1);
+  fs.writeFile('./db/db.json', JSON.stringify(result), function(err){
+   if(err) throw err;
+   res.json(true);
+ });
   
 })
 
