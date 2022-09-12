@@ -41,8 +41,8 @@ Please email me with questions!
 * cvanbreda91@gmail.com
 
 ## Screenshot
-![website-image](https://github.com/cvanbreda91/notes-and-boats/blob/main/images/website-2.png?raw=true)
-![website-image](https://github.com/cvanbreda91/notes-and-boats/blob/main/images/website-1.png?raw=true)
+![website-image](https://github.com/cvanbreda91/notes-and-boats/blob/main/public/assets/images/website-2.png?raw=true)
+![website-image](https://github.com/cvanbreda91/notes-and-boats/blob/main/public/assets/images/website-1.png?raw=true)
 
 ## Deployed Website Link
 https://fathomless-beach-70564.herokuapp.com/
