@@ -9,6 +9,7 @@ app.use(express.json());
 app.use(express.static('public'));
 const PORT = process.env.PORT || 3001;
 const { notes } = require('./db/db.json');
+const { request } = require('http');
 
 function findById(id, notesArray) {
   const result = notesArray.filter(note => note.id === id)[0];
@@ -61,7 +62,7 @@ app.get('/api/notes/:id', (req, res) => {
   const result = findById(req.params.id, notes);
     res.json(result);
 });
-app.get('/api/animals', (req, res) => {
+app.get('/api/notes', (req, res) => {
   let results = note;
   if (req.query) {
     results = filterByQuery(req.query, results);
@@ -78,9 +79,7 @@ app.post('/api/notes', (req, res) => {
   } else {
     const note = createNewNote(req.body, notes);
     res.json(note);
-  }
-
-  
+  }  
 });
 
 app.get('/notes', (req, res) => {
@@ -90,6 +89,15 @@ app.get('/notes', (req, res) => {
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
 });
+
+app.delete(`/api/notes/:id`, (req, res) => {
+  console.log("Method called is -- ", req.method)
+  //read all notes from db.json
+  // remove note given id property
+  //rewrite remaining notes to db.json
+  
+})
+
 app.listen(PORT, () => {
     console.log(`API server now on port ${PORT}!`);
   });
