@@ -1,3 +1,4 @@
+//declare dependancies
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
@@ -10,7 +11,7 @@ app.use(express.static('public'));
 const PORT = process.env.PORT || 3001;
 const { notes } = require('./db/db.json');
 
-
+//create functions for queries 
 function findById(id, notesArray) {
   const result = notesArray.filter(note => note.id === id)[0];
   return result;
@@ -27,6 +28,7 @@ function filterByQuery(query, notesArray) {
   return filteredResults;
 }
 
+//create a new note and add it to JSON array
 function createNewNote(body, notesArray) {
   const note = body;
   notesArray.push(note)
@@ -40,6 +42,7 @@ function createNewNote(body, notesArray) {
   return note;
 }
 
+//add validation
 function validateNote(note) {
   if (!note.title || typeof note.title !== 'string') {
     return false;
@@ -50,6 +53,7 @@ function validateNote(note) {
   return true;
 }
 
+//GET requests
 app.get('/api/notes',(req,res) => {
   res.json(notes);
 })
@@ -70,6 +74,7 @@ app.get('/api/notes', (req, res) => {
   res.json(results);
 });
 
+//POST requests
 app.post('/api/notes', (req, res) => {
   // set id based on what the next index of the array will be
   req.body.id = notes.length.toString();
@@ -90,6 +95,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
+//Delete JSON objects
 app.delete("/api/notes/:id", (req, res) => {
   console.log("Method called is -- ", req.method)
 
@@ -107,6 +113,7 @@ app.delete("/api/notes/:id", (req, res) => {
   
 })
 
+//PORT
 app.listen(PORT, () => {
     console.log(`API server now on port ${PORT}!`);
   });
